@@ -3,7 +3,7 @@ const app = new Koa();
 const rp = require('request-promise')
 const _ = require('koa-route');
 const bodyParser = require('koa-bodyParser')
-const PORT = 3000;
+const PORT = 3001;
 
 //****Middleware:
 //body parser
@@ -11,6 +11,7 @@ app.use(bodyParser());
 app.use(async (ctx,next) => {
   // the parsed body will store in ctx.request.body
   // if nothing was parsed, body will be an empty object {}
+  console.log(ctx.request.body)
   ctx.body = ctx.request.body;
   await next ();
 });
@@ -54,6 +55,7 @@ const reddit = {
         method: 'POST',
         form: {query: ctx.request.body.query}
       })
+      console.log(res)
       ctx.body = res
     }
     catch (error) {
