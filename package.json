@@ -4,7 +4,8 @@
   "description": "Server to provide interaction with reddit API using RESTful routes",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
   },
   "author": "Will Chou",
   "license": "ISC",

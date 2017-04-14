@@ -3,66 +3,57 @@ const app = new Koa();
 const rp = require('request-promise')
 const _ = require('koa-route');
 const PORT = 3000;
-// x-response-time
 
+//****Middleware:
+// x-response-time
 app.use(async function (ctx, next) {
   const start = new Date();
   await next();
   const ms = new Date() - start;
   ctx.set('X-Response-Time', `${ms}ms`);
 });
-
 // // logger
-
 app.use(async function (ctx, next) {
   const start = new Date();
+  // await reddit.subreddit(ctx,'funny')
   await next();
   const ms = new Date() - start;
   console.log(`${ctx.method} ${ctx.url} - ${ms}`);
 });
-
-
-const db = {
-  tobi: { name: 'tobi', species: 'ferret' },
-  loki: { name: 'loki', species: 'ferret' },
-  jane: { name: 'jane', species: 'ferret' }
-};
-
-const pets = {
-  list: (ctx) => {
-    const names = Object.keys(db);
-    ctx.body = 'pets: ' + names.join(', ');
-  },
-
-  show: (ctx, name) => {
-    const pet = db[name];
-    if (!pet) return ctx.throw('cannot find that pet', 404);
-    ctx.body = pet.name + ' is a ' + pet.species;
-  }
-};
-
+//**end of middleware
 const reddit = {
   frontpage: async (ctx) => {
     const fp = await rp('https://www.reddit.com/r/frontpage.json')
     const fpParsed = JSON.parse(fp)
-    console.log(fpParsed);
+    // console.log(fpParsed);
     ctx.body = fpParsed
   },
 
-  show: async (ctx,subreddit) =>{
-    const sr = await rp(`https://www.reddit.com/r/${subreddit}.json`)
-    const srParsed = JSON.parse(srParsed);
-    ctx.body = srParsed;
-  }
+  subreddit: async (ctx,subreddit) =>{
+    try {
+      const sr = await rp(`https://www.reddit.com/r/${subreddit}.json`)
+      const srParsed = JSON.parse(sr);
+      // console.log(srParsed)
+      ctx.body = srParsed;
+    }
+    catch (error) {
+      ctx.body= `subreddit ${subreddit} does not exist`
+    }
+  },
+
+  // next_page: async (ctx,after_code) => {
+  //   const np = await rp()
+  // },
+
+  // prev_page: async (ctx, before_code) => {
+
+  // }
+  
 }
 
-const hello = (ctx) => {
-  ctx.body = 'Hello World';
-};
-
 app.use(_.get('/', reddit.frontpage));
-app.use(_.get('/:subreddit'), reddit.show)
-app.use(_.get('/pets', pets.list))
-app.use(_.get('/pets/:name', pets.show));
+app.use(_.get('/:subreddit', reddit.subreddit))
+// app.use(_.get('/:subreddit/?page='))
+
 app.listen(PORT);
 console.log(`Listening on port ${PORT}`)
