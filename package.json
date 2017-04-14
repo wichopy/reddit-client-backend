@@ -1,0 +1,17 @@
+{
+  "name": "reddit-server-cluep",
+  "version": "0.0.1",
+  "description": "Server to provide interaction with reddit API using RESTful routes",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Will Chou",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.2",
+    "koa": "^2.2.0",
+    "koa-route": "^3.2.0",
+    "request-promise": "^4.2.0"
+  }
+}
