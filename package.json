@@ -13,6 +13,7 @@
     "express": "^4.15.2",
     "koa": "^2.2.0",
     "koa-bodyparser": "^4.2.0",
+    "koa-cors": "0.0.16",
     "koa-route": "^3.2.0",
     "request": "^2.81.0",
     "request-promise": "^4.2.0"
