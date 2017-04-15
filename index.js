@@ -42,14 +42,27 @@ const reddit = {
 
     subreddit: async(ctx, subreddit) => {
         try {
+            console.log('getting subreddit..')
             const sr = await rp(`https://www.reddit.com/r/${subreddit}.json`)
             const srParsed = JSON.parse(sr);
             ctx.body = srParsed;
+            console.log(srParsed)
         } catch (error) {
             ctx.body = `subreddit ${subreddit} does not exist`
         }
     },
-
+    post: async(ctx, permalink) => {
+        try {
+            console.log('getting post..')
+            const removeLastChar = permalink.slice(0, -1);
+            const postComments = await rp(`https://www.reddit.com/${removeLastChar}.json`)
+            const postCommentsParsed = JSON.parse(postComments);
+            ctx.body = postCommentsParsed;
+            console.log(postCommentsParsed)
+        } catch (error) {
+            ctx.body = `subreddit ${subreddit} does not exist`
+        }
+    },
     search_reddit_names: async(ctx) => {
         try {
             const res = await rp({
@@ -75,6 +88,7 @@ const reddit = {
 }
 
 app.use(_.get('/', reddit.frontpage));
+app.use(_.get('/post/:permalink', reddit.post))
 app.use(_.post('/search_reddit_names', reddit.search_reddit_names))
 app.use(_.get('/:subreddit', reddit.subreddit))
     // app.use(_.get('/:subreddit/?page='))
