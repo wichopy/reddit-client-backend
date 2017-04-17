@@ -35,6 +35,7 @@ app.use(async function(ctx, next) {
 //**end of middleware
 const reddit = {
   frontpage: async(ctx) => {
+    console.log('get frontpage')
     const fp = await rp('https://www.reddit.com/r/frontpage.json')
     const fpParsed = JSON.parse(fp)
     ctx.body = fpParsed
@@ -71,11 +72,12 @@ const reddit = {
     const prevPageParsed = JSON.parse(prevPage);
     ctx.body.sr = prevPageParsed;
   },
-  post: async(ctx, permalink) => {
+  posts: async(ctx) => {
     try {
-      console.log('getting post..')
-      const removeLastChar = permalink.slice(0, -1);
-      const postComments = await rp(`https://www.reddit.com/${removeLastChar}.json`)
+      console.log('getting posts.. at permakink', ctx.body.permalink)
+      const removeLastChar = ctx.body.permalink.slice(0, -1);
+      console.log(`https://www.reddit.com${removeLastChar}.json`)
+      const postComments = await rp(`https://www.reddit.com${removeLastChar}.json`)
       const postCommentsParsed = JSON.parse(postComments);
       ctx.body = postCommentsParsed;
       // console.log(postCommentsParsed)
@@ -89,7 +91,7 @@ const reddit = {
       const res = await rp({
           uri: 'https://www.reddit.com/api/search_reddit_names.json',
           method: 'POST',
-          form: { query: ctx.request.body.query }
+          form: { query: ctx.body.query }
         })
         // console.log(res)
       ctx.body = res
@@ -109,7 +111,7 @@ const reddit = {
 }
 
 app.use(_.get('/', reddit.frontpage));
-app.use(_.get('/post/:permalink', reddit.post))
+app.use(_.post('/posts', reddit.posts))
 app.use(_.post('/search_reddit_names', reddit.search_reddit_names))
 app.use(_.get('/:subreddit', reddit.subreddit))
 app.use(_.get('/:subreddit/after/:afterCode', reddit.subredditNextPage))
