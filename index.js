@@ -53,7 +53,24 @@ const reddit = {
       ctx.body = `subreddit ${subreddit} does not exist`
     }
   },
+  subredditNextPage: async(ctx, subreddit, afterCode) => {
+    console.log('in next page')
+    console.log(subreddit)
 
+    console.log(afterCode)
+    const nextPage = await rp(`https://www.reddit.com/r/${subreddit}.json?after=${afterCode}&count=25`)
+    const nextPageParsed = JSON.parse(nextPage);
+    ctx.body.sr = nextPageParsed;
+  },
+  subredditPrevPage: async(ctx, subreddit, beforeCode) => {
+    console.log('in prev page')
+    console.log(subreddit)
+
+    console.log(beforeCode)
+    const prevPage = await rp(`https://www.reddit.com/r/${subreddit}.json?before=${beforeCode}&count=25`)
+    const prevPageParsed = JSON.parse(prevPage);
+    ctx.body.sr = prevPageParsed;
+  },
   post: async(ctx, permalink) => {
     try {
       console.log('getting post..')
@@ -61,19 +78,20 @@ const reddit = {
       const postComments = await rp(`https://www.reddit.com/${removeLastChar}.json`)
       const postCommentsParsed = JSON.parse(postComments);
       ctx.body = postCommentsParsed;
-      console.log(postCommentsParsed)
+      // console.log(postCommentsParsed)
     } catch (error) {
       ctx.body = `subreddit ${subreddit} does not exist`
     }
   },
   search_reddit_names: async(ctx) => {
     try {
+      console.log('autcomplete suggestions...')
       const res = await rp({
-        uri: 'https://www.reddit.com/api/search_reddit_names.json',
-        method: 'POST',
-        form: { query: ctx.request.body.query }
-      })
-      console.log(res)
+          uri: 'https://www.reddit.com/api/search_reddit_names.json',
+          method: 'POST',
+          form: { query: ctx.request.body.query }
+        })
+        // console.log(res)
       ctx.body = res
     } catch (error) {
       ctx.body = error
@@ -94,6 +112,8 @@ app.use(_.get('/', reddit.frontpage));
 app.use(_.get('/post/:permalink', reddit.post))
 app.use(_.post('/search_reddit_names', reddit.search_reddit_names))
 app.use(_.get('/:subreddit', reddit.subreddit))
+app.use(_.get('/:subreddit/after/:afterCode', reddit.subredditNextPage))
+app.use(_.get('/:subreddit/before/:beforeCode', reddit.subredditPrevPage))
   // app.use(_.get('/:subreddit/?page='))
 
 app.listen(PORT);
