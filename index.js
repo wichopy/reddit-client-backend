@@ -99,24 +99,13 @@ const reddit = {
       ctx.body = error
     }
   }
-
-  // next_page: async (ctx,after_code) => {
-  //   const np = await rp()
-  // },
-
-  // prev_page: async (ctx, before_code) => {
-
-  // }
-
 }
-
 app.use(_.get('/', reddit.frontpage));
 app.use(_.post('/posts', reddit.posts))
 app.use(_.post('/search_reddit_names', reddit.search_reddit_names))
 app.use(_.get('/:subreddit', reddit.subreddit))
 app.use(_.get('/:subreddit/after/:afterCode', reddit.subredditNextPage))
 app.use(_.get('/:subreddit/before/:beforeCode', reddit.subredditPrevPage))
-  // app.use(_.get('/:subreddit/?page='))
 
 app.listen(PORT);
 console.log(`Listening on port ${PORT}`)
